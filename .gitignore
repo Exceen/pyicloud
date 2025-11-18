@@ -78,3 +78,5 @@ uv.lock
 fetch_devices_*.py
 *.jpg
 /test*.py
+
+venv/
