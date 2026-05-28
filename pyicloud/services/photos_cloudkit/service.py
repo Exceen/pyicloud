@@ -1672,6 +1672,7 @@ class PhotoAsset:
     PHOTO_VERSION_LOOKUP: dict[str, str] = {
         "original": "resOriginal",
         "alternative": "resOriginalAlt",
+        "adjusted": "resJPEGFull",
         "medium": "resJPEGMed",
         "thumb": "resJPEGThumb",
         "original_video": "resOriginalVidCompl",
@@ -1809,6 +1810,7 @@ class PhotoAsset:
                     key=key,
                     prefix=prefix,
                     master_record=self._master_record,
+                    asset_record=self._asset_record,
                     filename=self.filename,
                     item_type_extensions=self.FILE_TYPE_EXTENSIONS,
                     is_live_photo=self.is_live_photo,

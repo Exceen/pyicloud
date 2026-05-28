@@ -127,10 +127,24 @@ def build_photo_resource(
     item_type_extensions: dict[str, str],
     is_live_photo: bool,
     item_type_lookup: dict[str, str],
+    asset_record: CKRecord | dict[str, Any] | None = None,
 ) -> PhotoResource | None:
-    """Build a ``PhotoResource`` from a ``CPLMaster`` resource prefix."""
+    """Build a ``PhotoResource`` from a resource prefix.
 
-    token = record_field_value(master_record, f"{prefix}Res")
+    Resources are read from the ``CPLMaster`` record by default. When an
+    ``asset_record`` (``CPLAsset``) is supplied and carries the requested
+    resource, its fields take precedence over the master record's — some
+    resources (e.g. adjusted renders) only exist on the asset record.
+    """
+
+    source_record: CKRecord | dict[str, Any] = master_record
+    if (
+        asset_record is not None
+        and record_field_value(asset_record, f"{prefix}Res") is not None
+    ):
+        source_record = asset_record
+
+    token = record_field_value(source_record, f"{prefix}Res")
     if token is None:
         return None
 
@@ -144,10 +158,10 @@ def build_photo_resource(
         url = getattr(token, "downloadURL", None)
         size = getattr(token, "size", None)
 
-    resource_type = record_field_value(master_record, f"{prefix}FileType")
-    checksum = record_field_value(master_record, f"{prefix}Fingerprint")
-    width = record_field_value(master_record, f"{prefix}Width")
-    height = record_field_value(master_record, f"{prefix}Height")
+    resource_type = record_field_value(source_record, f"{prefix}FileType")
+    checksum = record_field_value(source_record, f"{prefix}Fingerprint")
+    width = record_field_value(source_record, f"{prefix}Width")
+    height = record_field_value(source_record, f"{prefix}Height")
 
     resource_filename = filename
     if resource_type and (
